@@ -1,14 +1,15 @@
 var express = require('express');
 var router = express.Router();
-var todo = require('../models/Todo')
-var Response = require('../models/Response')
+var Todo = require('../models/Todo')
+var Response = require('../models/Response');
+const User = require('../models/User');
 
 /* GET todos listing. */
 router.get('/', async function (req, res, next) {
   const response = new Response()
   try {
-    const todos = await Todo.find({})
-    response.data = todos
+    const todos = await Todo.find({}).populate('owner')
+    response.data = todos  
   } catch (e) {
     response.err = true
     response.data = 'gagal menampilkan data todos'
@@ -19,9 +20,16 @@ router.get('/', async function (req, res, next) {
 router.post('/', async function (req, res, next) {
   const response = new Response()
   try {
+    const user = await User.findById(req.body.userid)
+    
     const todo = await Todo.create({
-      title: req.body.title
+      title: req.body.title,
+      owner: user._id
     })
+    
+    user.todos.push(todo_id)
+    await user.save()
+
     response.data = todo
   } catch (e) {
     response.err = true

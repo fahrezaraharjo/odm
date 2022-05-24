@@ -7,7 +7,7 @@ var Response = require('../models/Response')
 router.get('/', async function (req, res, next) {
   const response = new Response()
   try {
-    const users = await User.find({})
+    const users = await User.find({}).populate('todos')
     response.data = users
   } catch (e) {
     response.err = true
